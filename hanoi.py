@@ -3,9 +3,12 @@
 from collections import deque
 
 class Tower(deque):
+    height =0;
+    def set_height(self, height):
+        self.height = height
     def get_row(self,row):
         try:
-            return self[row]
+            return self[self.height-1 -row]
         except IndexError:
             return None
 
@@ -18,41 +21,38 @@ class TerminalDisplay:
                |       |       |
                v       v       v
      
-    row3>      X       X       X    <size = 0
-    row2>     XXX     XXX     XXX   <size = 1
-    row1>    XXXXX   XXXXX   XXXXX
-    row0>   XXXXXXX XXXXXXX XXXXXXX   
+    row0>      X       X       X    <size = 0
+    row1>     XXX     XXX     XXX   <size = 1
+    row2>    XXXXX   XXXXX   XXXXX  <size = 2
+    row3>   XXXXXXX XXXXXXX XXXXXXX <size = 3
     '''
 
     def __init__(self,hanoi_instance):
         self.h = hanoi_instance
         self.size = hanoi_instance.size
-        self.tower_width = TerminalDisplay.wid(self.size)-2
-        self.total_print_width = 2+(3*self.tower_width)
-
-    def wid(count):
-        return (((count+1)*2)-1)
+        self.tower_width = TerminalDisplay.wid(self.size)
+        self.total_print_width = 3*self.tower_width+2
+        print(self.tower_width)
+    def wid(row_num):
+        return ((row_num*2)-1)
 
     def get_ring_char_width(ring_num):
         if ring_num is None:
             return 0
         else:
-            return TerminalDisplay.wid(ring_num)
+            return TerminalDisplay.wid(ring_num+1)
 
     def get_tower_string(self,tower, row_number):
-        if not isinstance(tower,Tower):
-            tower = self.h.towers[tower_index]
-        ring_number = tower.get_row(row_number) or None
-        ring_char_width = TerminalDisplay.get_ring_char_width(ring_number)
-        buff = self.tower_width - ring_char_width
-        white = ' '*int((buff/2.0))
-        ret = white + ring_char_width*'#'+white
-        return ret
+        ring_size = tower.get_row(row_number)
+
+        ring_char_width = TerminalDisplay.get_ring_char_width(ring_size)
+        res = '{val:^{width}}'.format(width=self.tower_width,val="#"*ring_char_width)
+
+        return res
 
     def show(self):
         line = ''
         rows = list(range(self.size))
-        rows.reverse()
         for i in rows:
             full_row = ''
             for tow in self.h.towers:
@@ -74,12 +74,16 @@ class Hanoi:
         self.tower_a = Tower()
         self.tower_b = Tower()
         self.tower_c = Tower()
+        
         self.towers = (self.tower_a,self.tower_b,self.tower_c)
+        for t in self.towers:
+            t.set_height(self.size)
         initial = list(range(self.size))
         initial.reverse()
         self.tower_a.extend(initial)
 
     def move(self,src,dest):
+        print("Moving from {} -> {}".format(src,dest))
         self.towers[dest].append(self.towers[src].pop())
 
     def show(self):
