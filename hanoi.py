@@ -33,6 +33,7 @@ class TerminalDisplay:
         self.tower_width = TerminalDisplay.wid(self.size)
         self.total_print_width = 3*self.tower_width+2
         print(self.tower_width)
+
     def wid(row_num):
         return ((row_num*2)-1)
 
@@ -58,7 +59,7 @@ class TerminalDisplay:
             for tow in self.h.towers:
                 full_row+=self.get_tower_string(tow,i)
             print(full_row)
-         
+                
 
 
 class Hanoi:
@@ -76,11 +77,11 @@ class Hanoi:
         self.tower_c = Tower()
         
         self.towers = (self.tower_a,self.tower_b,self.tower_c)
-        for t in self.towers:
-            t.set_height(self.size)
+        t = self.tower_a
+        t.set_height(self.size)
         initial = list(range(self.size))
         initial.reverse()
-        self.tower_a.extend(initial)
+        t.extend(initial)
 
     def move(self,src,dest):
         print("Moving from {} -> {}".format(src,dest))
